@@ -28,7 +28,7 @@ public class DispositivoController {
 
     @PostMapping("/sendNotification/{deviceId}")
     public ResponseEntity<String> sendNotification(
-            @PathVariable String deviceId, // Cambiado a String
+            @PathVariable int deviceId,
             @RequestBody SendNotification notification) {
         try {
             service.sendNotification(notification, deviceId);
