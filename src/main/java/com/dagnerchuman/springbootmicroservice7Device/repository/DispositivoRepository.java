@@ -12,4 +12,5 @@ public interface DispositivoRepository extends CrudRepository<Dispositivo, Integ
 
     Optional<Dispositivo> findByDeviceId(String deviceId);
 
+
 }

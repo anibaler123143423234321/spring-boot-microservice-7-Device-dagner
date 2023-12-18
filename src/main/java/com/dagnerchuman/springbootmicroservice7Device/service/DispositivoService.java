@@ -31,41 +31,37 @@ public class DispositivoService {
         return repository.save(dispositivo);
     }
 
-    public void sendNotification(SendNotification notification, int deviceID) {
-        Optional<Dispositivo> dispositivoOptional = repository.findById(deviceID);
+    public void sendNotification(SendNotification notification, Object deviceId) {
+        try {
+            // Convertir deviceId a String
+            String stringDeviceId = String.valueOf(deviceId);
 
-        if (dispositivoOptional.isPresent()) {
-            Dispositivo dispositivo = dispositivoOptional.get();
-            notification.setId(dispositivo.getDeviceId());
+            // Resto del código permanece igual
+            URL url = new URL(FCM_URL);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
-            try {
-                URL url = new URL(FCM_URL);
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Authorization", "key=" + FCM_APIKEY);
+            conn.setRequestProperty("Content-Type", "application/json");
+            conn.setDoOutput(true);
 
-                conn.setRequestMethod("POST");
-                conn.setRequestProperty("Authorization", "key=" + FCM_APIKEY);
-                conn.setRequestProperty("Content-Type", "application/json");
-                conn.setDoOutput(true);
+            String body = buildNotificationBody(notification);
 
-                String body = buildNotificationBody(notification);
+            OutputStream os = conn.getOutputStream();
+            os.write(body.getBytes());
+            os.flush();
 
-                OutputStream os = conn.getOutputStream();
-                os.write(body.getBytes());
-                os.flush();
-
-                int responseCode = conn.getResponseCode();
-                if (responseCode == HTTP_OK) {
-                    System.out.println("Notificación enviada correctamente.");
-                } else {
-                    System.out.println("Error al enviar la notificación. Código de respuesta: " + responseCode);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
+            int responseCode = conn.getResponseCode();
+            if (responseCode == HTTP_OK) {
+                System.out.println("Notificación enviada correctamente.");
+            } else {
+                System.out.println("Error al enviar la notificación. Código de respuesta: " + responseCode);
             }
-        } else {
-            System.out.println("El deviceID no ha sido encontrado");
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
+
 
     private static String buildNotificationBody(SendNotification notification) {
         return String.format(

@@ -28,7 +28,7 @@ public class DispositivoController {
 
     @PostMapping("/sendNotification/{deviceId}")
     public ResponseEntity<String> sendNotification(
-            @PathVariable int deviceId,
+            @PathVariable String deviceId, // Cambiado a String
             @RequestBody SendNotification notification) {
         try {
             service.sendNotification(notification, deviceId);
@@ -38,6 +38,7 @@ public class DispositivoController {
             return new ResponseEntity<>("Error al enviar la notificación.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
 
     @GetMapping("/getAllDevices")
     public ResponseEntity<List<Dispositivo>> getAllDevices() {
